@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TechJobsConsole
 {
@@ -57,18 +58,38 @@ namespace TechJobsConsole
                     // What is their search term?
                     Console.WriteLine("\nSearch term: ");
                     string searchTerm = Console.ReadLine();
-
+                  
                     List<Dictionary<string, string>> searchResults;
 
                     // Fetch results
                     if (columnChoice.Equals("all"))
+
                     {
-                        Console.WriteLine("Search all fields not yet implemented.");
+                        searchResults = JobData.FindByValue(searchTerm);
+                        if (!searchResults.Any())
+                        {
+                            Console.WriteLine("search results not found");
+                        }
+                        else
+                        {
+
+                            PrintJobs(searchResults);
+                        }
                     }
+
+
+
                     else
                     {
                         searchResults = JobData.FindByColumnAndValue(columnChoice, searchTerm);
-                        PrintJobs(searchResults);
+                        if (!searchResults.Any())
+                        {
+                            Console.WriteLine("search results not found");
+                        }
+                        else
+                        {
+                            PrintJobs(searchResults);
+                        }
                     }
                 }
             }
@@ -118,7 +139,21 @@ namespace TechJobsConsole
 
         private static void PrintJobs(List<Dictionary<string, string>> someJobs)
         {
-            Console.WriteLine("PrintJobs is not implemented yet");
+           
+
+            foreach( Dictionary<string, string>item in someJobs)
+            {
+               
+                    Console.WriteLine("\n***** ");
+                    foreach (KeyValuePair<string, string> job in item)
+                    {
+                    Console.WriteLine(job.Key + ":" + job.Value);
+
+                    }
+                    Console.WriteLine("\n***** ");
+                
+            }
+           
         }
     }
 }

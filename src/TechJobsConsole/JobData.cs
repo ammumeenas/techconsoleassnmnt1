@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -35,6 +37,8 @@ namespace TechJobsConsole
                     values.Add(aValue);
                 }
             }
+
+            values.Sort();
             return values;
         }
 
@@ -45,11 +49,15 @@ namespace TechJobsConsole
 
             List<Dictionary<string, string>> jobs = new List<Dictionary<string, string>>();
 
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            string titlecaseword = textInfo.ToTitleCase(value);
+            string lowercaseword = value.ToLower();
+
             foreach (Dictionary<string, string> row in AllJobs)
             {
                 string aValue = row[column];
 
-                if (aValue.Contains(value))
+                if (aValue.Contains(value) || aValue.Contains(titlecaseword) || aValue.Contains(lowercaseword))
                 {
                     jobs.Add(row);
                 }
@@ -105,6 +113,26 @@ namespace TechJobsConsole
         /*
          * Parse a single line of a CSV file into a string array
          */
+
+        public static List<Dictionary<string, string>> FindByValue(string searchword)
+        {
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+             string titlecaseword = textInfo.ToTitleCase(searchword);
+            string lowercaseword = searchword.ToLower();
+
+            LoadData();
+            List<Dictionary<string, string>> search = new List<Dictionary<string, string>>();
+            foreach(Dictionary<string,string> item in AllJobs)
+            {
+                foreach(KeyValuePair<string,string>keyvalue in item)
+                {
+                    if ((keyvalue.Value.Contains(searchword) || keyvalue.Value.Contains(titlecaseword) || keyvalue.Value.Contains(lowercaseword)) && !search.Contains(item))
+               
+                    search.Add(item);
+                }
+            }
+            return search;
+        }
         private static string[] CSVRowToStringArray(string row, char fieldSeparator = ',', char stringSeparator = '\"')
         {
             bool isBetweenQuotes = false;
@@ -138,5 +166,7 @@ namespace TechJobsConsole
 
             return rowValues.ToArray();
         }
+
+      
     }
 }
